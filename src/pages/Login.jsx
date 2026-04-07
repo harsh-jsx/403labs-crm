@@ -1,13 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Form } from "@heroui/react";
 import { Button, FieldError, Input, Label, TextField } from "@heroui/react";
-import { auth, db } from "../firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@heroui/react";
+import { getAdminStateForUid, useAdminAuth } from "../hooks/useAdminAuth";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { user, isAdmin, isLoading } = useAdminAuth();
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (user && isAdmin) {
+      navigate("/", { replace: true });
+    }
+  }, [isLoading, user, isAdmin, navigate]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -17,18 +26,29 @@ const Login = () => {
     const password = String(formData.get("password") ?? "");
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      toast.success("Signed in successfully");
+      const credential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      const { isAdmin: allowed } = await getAdminStateForUid(
+        credential.user.uid,
+      );
 
-      const user = auth.currentUser;
-      const userData = await getDoc(doc(db, "users", user.uid));
-      if (userData.exists()) {
-        const userData = userData.data();
-        console.log(userData);
+      if (!allowed) {
+        await signOut(auth);
+        toast.danger("Access denied. Admin accounts only.");
+        return;
       }
-      navigate("/");
-    } catch {
-      toast.danger("Invalid email or password");
+
+      toast.success("Signed in successfully");
+      navigate("/", { replace: true });
+    } catch (err) {
+      if (err?.code === "auth/invalid-credential") {
+        toast.danger("Invalid email or password");
+      } else {
+        toast.danger("Sign-in failed. Please try again.");
+      }
     }
   };
 
@@ -99,6 +119,7 @@ const Login = () => {
             type="submit"
             color="primary"
             className="mt-1 w-full rounded-xl font-medium shadow-lg shadow-violet-500/25 transition-[transform,box-shadow] hover:shadow-violet-500/35 active:scale-[0.99]"
+            isDisabled={isLoading}
           >
             Sign in
           </Button>

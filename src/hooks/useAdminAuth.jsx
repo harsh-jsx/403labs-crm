@@ -43,8 +43,13 @@ export function AdminAuthProvider({ children }) {
       }
 
       setIsLoading(true);
+      const uid = firebaseUser.uid;
       const { profile: nextProfile, isAdmin: nextIsAdmin } =
-        await getAdminStateForUid(firebaseUser.uid);
+        await getAdminStateForUid(uid);
+
+      if (auth.currentUser?.uid !== uid) {
+        return;
+      }
 
       if (!nextIsAdmin) {
         await firebaseSignOut(auth);

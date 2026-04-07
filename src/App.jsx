@@ -8,17 +8,26 @@ import {
 } from "react-router-dom";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
+import Navbar from "./components/Navbar";
+import ContactsCreate from "./pages/ContactsCreate";
+import LeadsCreate from "./pages/LeadsCreate";
+import MeetingsCreate from "./pages/MeetingsCreate";
+import TasksCreate from "./pages/TasksCreate";
 import { Toast } from "@heroui/react";
 import { AdminAuthProvider, useAdminAuth } from "./hooks/useAdminAuth";
-
+import { useState } from "react";
 function ProtectedAdminRoute({ children }) {
   const { user, isAdmin, isLoading } = useAdminAuth();
+  const [showNavbar, setShowNavbar] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (isLoading) return;
     if (!user || !isAdmin) {
+      setShowNavbar(false);
       navigate("/login", { replace: true });
+    } else {
+      setShowNavbar(true);
     }
   }, [isLoading, user, isAdmin, navigate]);
 
@@ -30,7 +39,12 @@ function ProtectedAdminRoute({ children }) {
     );
   }
 
-  return children;
+  return (
+    <>
+      {showNavbar && <Navbar />}
+      {children}
+    </>
+  );
 }
 
 const App = () => {
@@ -45,6 +59,38 @@ const App = () => {
             element={
               <ProtectedAdminRoute>
                 <Home />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/contacts/create"
+            element={
+              <ProtectedAdminRoute>
+                <ContactsCreate />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/leads/create"
+            element={
+              <ProtectedAdminRoute>
+                <LeadsCreate />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/meetings/create"
+            element={
+              <ProtectedAdminRoute>
+                <MeetingsCreate />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/tasks/create"
+            element={
+              <ProtectedAdminRoute>
+                <TasksCreate />
               </ProtectedAdminRoute>
             }
           />
