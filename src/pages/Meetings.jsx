@@ -1,5 +1,6 @@
 import React from "react";
 import ListShell from "../components/ListShell";
+import RowActions from "../components/RowActions";
 import { useCollectionList } from "../hooks/useCollectionList";
 
 function asDate(v) {
@@ -46,26 +47,27 @@ export default function Meetings() {
               <th className="px-5 py-3.5 font-semibold">Status</th>
               <th className="px-5 py-3.5 font-semibold">Start</th>
               <th className="px-5 py-3.5 font-semibold">End</th>
+              <th className="px-5 py-3.5 text-right font-semibold">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {isLoading && (
               <tr>
-                <td className="px-4 py-4 text-zinc-500" colSpan={5}>
+                <td className="px-4 py-4 text-slate-500" colSpan={6}>
                   Loading…
                 </td>
               </tr>
             )}
             {error && (
               <tr>
-                <td className="px-4 py-4 text-rose-600" colSpan={5}>
+                <td className="px-4 py-4 text-rose-600" colSpan={6}>
                   {String(error?.message ?? error)}
                 </td>
               </tr>
             )}
             {!isLoading && !error && items.length === 0 && (
               <tr>
-                <td className="px-4 py-6 text-zinc-500" colSpan={5}>
+                <td className="px-4 py-6 text-slate-500" colSpan={6}>
                   No meetings yet.
                 </td>
               </tr>
@@ -87,6 +89,14 @@ export default function Meetings() {
                   </td>
                   <td className="px-5 py-3.5 text-slate-600">
                     {formatDateTime(end)}
+                  </td>
+                  <td className="px-5 py-3.5">
+                    <RowActions
+                      collectionName="meetings"
+                      id={m.id}
+                      label={m.title}
+                      editTo={`/meetings/${m.id}/edit`}
+                    />
                   </td>
                 </tr>
               );

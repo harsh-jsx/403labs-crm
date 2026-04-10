@@ -17,6 +17,8 @@ import Meetings from "./pages/Meetings";
 import MeetingsCreate from "./pages/MeetingsCreate";
 import Tasks from "./pages/Tasks";
 import TasksCreate from "./pages/TasksCreate";
+import Activities from "./pages/Activities";
+import ActivitiesCreate from "./pages/ActivitiesCreate";
 import { Toast } from "@heroui/react";
 import { AdminAuthProvider, useAdminAuth } from "./hooks/useAdminAuth";
 
@@ -75,6 +77,14 @@ const App = () => {
             }
           />
           <Route
+            path="/contacts/:id/edit"
+            element={
+              <ProtectedAdminRoute>
+                <ContactsCreate />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
             path="/contacts"
             element={
               <ProtectedAdminRoute>
@@ -84,6 +94,14 @@ const App = () => {
           />
           <Route
             path="/leads/create"
+            element={
+              <ProtectedAdminRoute>
+                <LeadsCreate />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/leads/:id/edit"
             element={
               <ProtectedAdminRoute>
                 <LeadsCreate />
@@ -107,6 +125,14 @@ const App = () => {
             }
           />
           <Route
+            path="/meetings/:id/edit"
+            element={
+              <ProtectedAdminRoute>
+                <MeetingsCreate />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
             path="/meetings"
             element={
               <ProtectedAdminRoute>
@@ -123,10 +149,42 @@ const App = () => {
             }
           />
           <Route
+            path="/tasks/:id/edit"
+            element={
+              <ProtectedAdminRoute>
+                <TasksCreate />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
             path="/tasks"
             element={
               <ProtectedAdminRoute>
                 <Tasks />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/activities/create"
+            element={
+              <ProtectedAdminRoute>
+                <ActivitiesCreate />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/activities/:id/edit"
+            element={
+              <ProtectedAdminRoute>
+                <ActivitiesCreate />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/activities"
+            element={
+              <ProtectedAdminRoute>
+                <Activities />
               </ProtectedAdminRoute>
             }
           />

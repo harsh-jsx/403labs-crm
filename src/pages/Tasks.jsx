@@ -1,5 +1,6 @@
 import React from "react";
 import ListShell from "../components/ListShell";
+import RowActions from "../components/RowActions";
 import { useCollectionList } from "../hooks/useCollectionList";
 
 function asDate(v) {
@@ -45,26 +46,27 @@ export default function Tasks() {
               <th className="px-5 py-3.5 font-semibold">Status</th>
               <th className="px-5 py-3.5 font-semibold">Priority</th>
               <th className="px-5 py-3.5 font-semibold">Due</th>
+              <th className="px-5 py-3.5 text-right font-semibold">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {isLoading && (
               <tr>
-                <td className="px-4 py-4 text-zinc-500" colSpan={5}>
+                <td className="px-4 py-4 text-slate-500" colSpan={6}>
                   Loading…
                 </td>
               </tr>
             )}
             {error && (
               <tr>
-                <td className="px-4 py-4 text-rose-600" colSpan={5}>
+                <td className="px-4 py-4 text-rose-600" colSpan={6}>
                   {String(error?.message ?? error)}
                 </td>
               </tr>
             )}
             {!isLoading && !error && items.length === 0 && (
               <tr>
-                <td className="px-4 py-6 text-zinc-500" colSpan={5}>
+                <td className="px-4 py-6 text-slate-500" colSpan={6}>
                   No tasks yet.
                 </td>
               </tr>
@@ -84,6 +86,14 @@ export default function Tasks() {
                     {t.priority ?? "—"}
                   </td>
                   <td className="px-5 py-3.5 text-slate-600">{formatDate(due)}</td>
+                  <td className="px-5 py-3.5">
+                    <RowActions
+                      collectionName="tasks"
+                      id={t.id}
+                      label={t.name}
+                      editTo={`/tasks/${t.id}/edit`}
+                    />
+                  </td>
                 </tr>
               );
             })}

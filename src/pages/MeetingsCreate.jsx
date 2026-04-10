@@ -285,7 +285,9 @@ export default function MeetingsCreate() {
                   </Select>
                 </Field>
                 <Field label="Reminders">
-                  <TextInput placeholder="+" value="" readOnly onChange={() => {}} />
+                  <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-2.5 text-xs text-slate-400">
+                    Add reminders (coming soon)
+                  </div>
                 </Field>
               </FieldRow>
 

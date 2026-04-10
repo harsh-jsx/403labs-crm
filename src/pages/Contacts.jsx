@@ -1,5 +1,6 @@
 import React from "react";
 import ListShell from "../components/ListShell";
+import RowActions from "../components/RowActions";
 import { useCollectionList } from "../hooks/useCollectionList";
 
 export default function Contacts() {
@@ -24,26 +25,27 @@ export default function Contacts() {
               <th className="px-5 py-3.5 font-semibold">Account</th>
               <th className="px-5 py-3.5 font-semibold">Email</th>
               <th className="px-5 py-3.5 font-semibold">Phone</th>
+              <th className="px-5 py-3.5 text-right font-semibold">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {isLoading && (
               <tr>
-                <td className="px-4 py-4 text-zinc-500" colSpan={4}>
+                <td className="px-4 py-4 text-slate-500" colSpan={5}>
                   Loading…
                 </td>
               </tr>
             )}
             {error && (
               <tr>
-                <td className="px-4 py-4 text-rose-600" colSpan={4}>
+                <td className="px-4 py-4 text-rose-600" colSpan={5}>
                   {String(error?.message ?? error)}
                 </td>
               </tr>
             )}
             {!isLoading && !error && items.length === 0 && (
               <tr>
-                <td className="px-4 py-6 text-zinc-500" colSpan={4}>
+                <td className="px-4 py-6 text-slate-500" colSpan={5}>
                   No contacts yet.
                 </td>
               </tr>
@@ -61,6 +63,14 @@ export default function Contacts() {
                 </td>
                 <td className="px-5 py-3.5 text-slate-600">
                   {c.mobile ?? c.phone ?? "—"}
+                </td>
+                <td className="px-5 py-3.5">
+                  <RowActions
+                    collectionName="contacts"
+                    id={c.id}
+                    label={c.name}
+                    editTo={`/contacts/${c.id}/edit`}
+                  />
                 </td>
               </tr>
             ))}

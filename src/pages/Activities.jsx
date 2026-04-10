@@ -2,43 +2,46 @@ import React from "react";
 import ListShell from "../components/ListShell";
 import RowActions from "../components/RowActions";
 import { useCollectionList } from "../hooks/useCollectionList";
+import { toJsDate } from "../lib/firestoreForm";
 
-function formatINR(value) {
-  const n = Number(value ?? 0);
+function formatDue(v) {
+  const d = toJsDate(v);
+  if (!d) return "—";
   try {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      maximumFractionDigits: 0,
-    }).format(n);
+    return new Intl.DateTimeFormat(undefined, {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(d);
   } catch {
-    return `₹${n.toLocaleString("en-IN")}`;
+    return "—";
   }
 }
 
-export default function Leads() {
-  const { items, isLoading, error } = useCollectionList("leads", {
-    orderByField: "createdAt",
+export default function Activities() {
+  const { items, isLoading, error } = useCollectionList("activities", {
+    orderByField: "dueAt",
     order: "desc",
     max: 100,
   });
 
   return (
     <ListShell
-      title="Leads"
-      subtitle="All leads stored in Firestore"
-      createTo="/leads/create"
-      createLabel="Create lead"
+      title="Activities"
+      subtitle="Tasks and follow-ups (events on your dashboard)"
+      createTo="/activities/create"
+      createLabel="Create activity"
     >
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead className="bg-slate-900 text-left text-xs font-semibold uppercase tracking-wide text-slate-300">
             <tr>
-              <th className="px-5 py-3.5 font-semibold">Name</th>
+              <th className="px-5 py-3.5 font-semibold">Title</th>
               <th className="px-5 py-3.5 font-semibold">Account</th>
-              <th className="px-5 py-3.5 font-semibold">Source</th>
-              <th className="px-5 py-3.5 font-semibold">Stage</th>
-              <th className="px-5 py-3.5 text-right font-semibold">Value (INR)</th>
+              <th className="px-5 py-3.5 font-semibold">Status</th>
+              <th className="px-5 py-3.5 font-semibold">Priority</th>
+              <th className="px-5 py-3.5 font-semibold">Due</th>
               <th className="px-5 py-3.5 text-right font-semibold">Actions</th>
             </tr>
           </thead>
@@ -60,31 +63,31 @@ export default function Leads() {
             {!isLoading && !error && items.length === 0 && (
               <tr>
                 <td className="px-4 py-6 text-slate-500" colSpan={6}>
-                  No leads yet.
+                  No activities yet.
                 </td>
               </tr>
             )}
-            {items.map((l) => (
-              <tr key={l.id} className="transition hover:bg-slate-50/80">
+            {items.map((a) => (
+              <tr key={a.id} className="transition hover:bg-slate-50/80">
                 <td className="px-5 py-3.5 font-medium text-slate-900">
-                  {l.name ?? "—"}
+                  {a.title ?? "—"}
                 </td>
                 <td className="px-5 py-3.5 text-slate-600">
-                  {l.company ?? "—"}
+                  {a.account ?? "—"}
+                </td>
+                <td className="px-5 py-3.5 text-slate-600">{a.status ?? "—"}</td>
+                <td className="px-5 py-3.5 text-slate-600">
+                  {a.priority ?? "—"}
                 </td>
                 <td className="px-5 py-3.5 text-slate-600">
-                  {l.source ?? "—"}
-                </td>
-                <td className="px-5 py-3.5 text-slate-600">{l.stage ?? "—"}</td>
-                <td className="px-5 py-3.5 text-right font-semibold text-slate-900">
-                  {formatINR(l.value)}
+                  {formatDue(a.dueAt)}
                 </td>
                 <td className="px-5 py-3.5">
                   <RowActions
-                    collectionName="leads"
-                    id={l.id}
-                    label={l.name}
-                    editTo={`/leads/${l.id}/edit`}
+                    collectionName="activities"
+                    id={a.id}
+                    label={a.title}
+                    editTo={`/activities/${a.id}/edit`}
                   />
                 </td>
               </tr>
@@ -95,4 +98,3 @@ export default function Leads() {
     </ListShell>
   );
 }
-

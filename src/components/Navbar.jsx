@@ -46,6 +46,9 @@ export default function Navbar() {
             <NavLink to="/tasks" className={navClass}>
               Tasks
             </NavLink>
+            <NavLink to="/activities" className={navClass}>
+              Activities
+            </NavLink>
           </nav>
         </div>
         <div className="flex shrink-0 items-center gap-3">
