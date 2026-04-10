@@ -20,6 +20,8 @@ export default function CrmShell({
   title,
   crumbs = [],
   onSave,
+  onDelete,
+  deleteDisabled,
   onCancelTo = "/",
   children,
 }) {
@@ -45,6 +47,17 @@ export default function CrmShell({
             </h1>
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            {onDelete ? (
+              <Button
+                color="danger"
+                variant="flat"
+                className="font-semibold"
+                onClick={onDelete}
+                isDisabled={deleteDisabled}
+              >
+                Delete
+              </Button>
+            ) : null}
             <Button
               color="primary"
               className="font-semibold"
