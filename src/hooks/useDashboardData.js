@@ -23,7 +23,7 @@ export function useDashboardData() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    setIsLoading(tre);
+    setIsLoading(true);
     setError(null);
 
     const unsubs = [];

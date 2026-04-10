@@ -1,13 +1,25 @@
-import React, { useState } from "react";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  serverTimestamp,
+} from "firebase/firestore";
 import { toast } from "@heroui/react";
 import { db } from "../firebase";
 import CrmShell from "../components/CrmShell";
 import FormSection from "../components/FormSection";
-import { Field, FieldRow, Select, TextArea, TextInput } from "../components/Field";
+import {
+  Field,
+  FieldRow,
+  Select,
+  TextArea,
+  TextInput,
+} from "../components/Field";
 
 export default function LeadsCreate() {
   const [isSaving, setIsSaving] = useState(false);
+  const [users, setUsers] = useState([]);
   const [form, setForm] = useState({
     name: "",
     accountName: "",
@@ -30,8 +42,7 @@ export default function LeadsCreate() {
     teams: "",
   });
 
-  const set = (key) => (e) =>
-    setForm((p) => ({ ...p, [key]: e.target.value }));
+  const set = (key) => (e) => setForm((p) => ({ ...p, [key]: e.target.value }));
 
   const onSave = async () => {
     if (!form.name.trim()) {
@@ -74,12 +85,23 @@ export default function LeadsCreate() {
     }
   };
 
+  const getUsers = async () => {
+    const users = await getDocs(collection(db, "users"));
+    const usersData = users.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    const usersToSet = usersData.filter((user) => user.isAdmin);
+    console.log(usersToSet);
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
+
   return (
     <CrmShell
       title="Leads • create"
-      crumbs={[{ label: "Leads", to: "/" }, { label: "create" }]}
+      crumbs={[{ label: "Leads", to: "/leads" }, { label: "create" }]}
       onSave={isSaving ? undefined : onSave}
-      onCancelTo="/"
+      onCancelTo="/leads"
     >
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
         <div className="lg:col-span-8">
@@ -185,8 +207,8 @@ export default function LeadsCreate() {
                       onChange={set("opportunityAmount")}
                       placeholder="0"
                     />
-                    <Select value="USD" onChange={() => {}}>
-                      <option>USD</option>
+                    <Select value="INR" onChange={() => {}}>
+                      <option>INR</option>
                     </Select>
                   </div>
                 </Field>
@@ -226,9 +248,16 @@ export default function LeadsCreate() {
           <div className="space-y-4">
             <FormSection title="Assigned User">
               <Field label="Assigned User">
-                <Select value={form.assignedUser} onChange={set("assignedUser")}>
+                <Select
+                  value={form.assignedUser}
+                  onChange={set("assignedUser")}
+                >
                   <option value="">Select</option>
-                  <option>Jack Adams</option>
+                  {users.map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.email}
+                    </option>
+                  ))}
                   <option>Harsh</option>
                 </Select>
               </Field>
@@ -248,4 +277,3 @@ export default function LeadsCreate() {
     </CrmShell>
   );
 }
-

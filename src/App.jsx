@@ -9,39 +9,43 @@ import {
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
+import Contacts from "./pages/Contacts";
 import ContactsCreate from "./pages/ContactsCreate";
+import Leads from "./pages/Leads";
 import LeadsCreate from "./pages/LeadsCreate";
+import Meetings from "./pages/Meetings";
 import MeetingsCreate from "./pages/MeetingsCreate";
+import Tasks from "./pages/Tasks";
 import TasksCreate from "./pages/TasksCreate";
 import { Toast } from "@heroui/react";
 import { AdminAuthProvider, useAdminAuth } from "./hooks/useAdminAuth";
-import { useState } from "react";
+
 function ProtectedAdminRoute({ children }) {
   const { user, isAdmin, isLoading } = useAdminAuth();
-  const [showNavbar, setShowNavbar] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (isLoading) return;
     if (!user || !isAdmin) {
-      setShowNavbar(false);
       navigate("/login", { replace: true });
-    } else {
-      setShowNavbar(true);
     }
   }, [isLoading, user, isAdmin, navigate]);
 
   if (isLoading || !user || !isAdmin) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#050506] text-sm text-zinc-400">
-        Loading…
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-950 text-slate-400">
+        <div
+          className="h-10 w-10 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent"
+          aria-hidden
+        />
+        <p className="text-sm font-medium text-slate-500">Loading workspace…</p>
       </div>
     );
   }
 
   return (
     <>
-      {showNavbar && <Navbar />}
+      <Navbar />
       {children}
     </>
   );
@@ -71,10 +75,26 @@ const App = () => {
             }
           />
           <Route
+            path="/contacts"
+            element={
+              <ProtectedAdminRoute>
+                <Contacts />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
             path="/leads/create"
             element={
               <ProtectedAdminRoute>
                 <LeadsCreate />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/leads"
+            element={
+              <ProtectedAdminRoute>
+                <Leads />
               </ProtectedAdminRoute>
             }
           />
@@ -87,10 +107,26 @@ const App = () => {
             }
           />
           <Route
+            path="/meetings"
+            element={
+              <ProtectedAdminRoute>
+                <Meetings />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
             path="/tasks/create"
             element={
               <ProtectedAdminRoute>
                 <TasksCreate />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/tasks"
+            element={
+              <ProtectedAdminRoute>
+                <Tasks />
               </ProtectedAdminRoute>
             }
           />

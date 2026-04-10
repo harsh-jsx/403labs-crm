@@ -84,9 +84,9 @@ export default function MeetingsCreate() {
   return (
     <CrmShell
       title="Meetings • create"
-      crumbs={[{ label: "Meetings", to: "/" }, { label: "create" }]}
+      crumbs={[{ label: "Meetings", to: "/meetings" }, { label: "create" }]}
       onSave={isSaving ? undefined : onSave}
-      onCancelTo="/"
+      onCancelTo="/meetings"
     >
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
         <div className="lg:col-span-8">

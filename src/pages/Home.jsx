@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Button } from "@heroui/react";
+import { Link } from "react-router-dom";
 import { useAdminAuth } from "../hooks/useAdminAuth";
 import { useDashboardData } from "../hooks/useDashboardData";
 
@@ -27,12 +27,12 @@ function formatTime(d) {
 
 function Badge({ children, tone = "zinc" }) {
   const tones = {
-    zinc: "bg-white/7 text-zinc-200 ring-white/10",
-    green: "bg-emerald-500/15 text-emerald-200 ring-emerald-400/20",
-    amber: "bg-amber-500/15 text-amber-200 ring-amber-400/20",
-    rose: "bg-rose-500/15 text-rose-200 ring-rose-400/20",
-    cyan: "bg-cyan-500/15 text-cyan-200 ring-cyan-400/20",
-    violet: "bg-violet-500/15 text-violet-200 ring-violet-400/20",
+    zinc: "bg-slate-100 text-slate-700 ring-slate-200/80",
+    green: "bg-emerald-50 text-emerald-800 ring-emerald-200/80",
+    amber: "bg-amber-50 text-amber-900 ring-amber-200/80",
+    rose: "bg-rose-50 text-rose-800 ring-rose-200/80",
+    cyan: "bg-cyan-50 text-cyan-900 ring-cyan-200/80",
+    violet: "bg-violet-50 text-violet-900 ring-violet-200/80",
   };
   return (
     <span
@@ -45,9 +45,9 @@ function Badge({ children, tone = "zinc" }) {
 
 function Card({ title, right, children }) {
   return (
-    <section className="rounded-2xl border border-white/8 bg-[#0c0c0f]/80 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.55)] backdrop-blur-xl">
-      <div className="flex items-center justify-between border-b border-white/6 px-5 py-4">
-        <h2 className="text-sm font-semibold tracking-wide text-zinc-100">
+    <section className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm shadow-slate-200/40">
+      <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/80 px-5 py-3.5">
+        <h2 className="text-sm font-semibold tracking-wide text-slate-800">
           {title}
         </h2>
         {right}
@@ -59,13 +59,13 @@ function Card({ title, right, children }) {
 
 function DonutChart({ data }) {
   const palette = [
-    "#60A5FA", // blue
-    "#34D399", // green
-    "#FBBF24", // amber
-    "#A78BFA", // violet
-    "#F87171", // red
-    "#22D3EE", // cyan
-    "#FB7185", // rose
+    "#3b82f6",
+    "#10b981",
+    "#f59e0b",
+    "#8b5cf6",
+    "#ef4444",
+    "#06b6d4",
+    "#f43f5e",
   ];
 
   const total = data.reduce((s, d) => s + d.value, 0);
@@ -84,8 +84,6 @@ function DonutChart({ data }) {
     });
   }, [data, total]);
 
-  // SVG “progress circles” technique: each segment is a circle with dasharray.
-  // Rotate by cumulative percentage to place segments around the ring.
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-[220px_1fr] sm:items-center">
       <div className="mx-auto w-[200px]">
@@ -95,7 +93,7 @@ function DonutChart({ data }) {
             cy="22"
             r="16"
             fill="transparent"
-            stroke="rgba(255,255,255,0.08)"
+            stroke="rgb(226 232 240)"
             strokeWidth="6"
           />
           {segments.map((s) => (
@@ -112,18 +110,13 @@ function DonutChart({ data }) {
               transform={`rotate(${s.start * 360 - 90} 22 22)`}
             />
           ))}
-          <circle
-            cx="22"
-            cy="22"
-            r="12"
-            fill="rgba(0,0,0,0.35)"
-          />
+          <circle cx="22" cy="22" r="12" fill="white" />
           <text
             x="22"
             y="21.5"
             textAnchor="middle"
             fontSize="4.2"
-            fill="rgba(255,255,255,0.9)"
+            fill="rgb(15 23 42)"
             fontWeight="600"
           >
             {total}
@@ -133,7 +126,7 @@ function DonutChart({ data }) {
             y="26.5"
             textAnchor="middle"
             fontSize="2.6"
-            fill="rgba(161,161,170,0.9)"
+            fill="rgb(100 116 139)"
           >
             leads
           </text>
@@ -143,22 +136,22 @@ function DonutChart({ data }) {
         {segments.map((s) => (
           <div
             key={s.label}
-            className="flex items-center justify-between gap-3 rounded-lg bg-white/3 px-3 py-2"
+            className="flex items-center justify-between gap-3 rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2"
           >
             <div className="flex items-center gap-2">
               <span
                 className="h-2.5 w-2.5 rounded-sm"
                 style={{ background: s.color }}
               />
-              <span className="text-sm text-zinc-200">{s.label}</span>
+              <span className="text-sm text-slate-800">{s.label}</span>
             </div>
-            <span className="text-xs text-zinc-400">
+            <span className="text-xs text-slate-500">
               {total ? Math.round((s.value / total) * 100) : 0}% ({s.value})
             </span>
           </div>
         ))}
         {segments.length === 0 && (
-          <div className="text-sm text-zinc-500">No data yet.</div>
+          <div className="text-sm text-slate-500">No data yet.</div>
         )}
       </div>
     </div>
@@ -166,7 +159,7 @@ function DonutChart({ data }) {
 }
 
 const Home = () => {
-  const { user, signOut } = useAdminAuth();
+  const { user } = useAdminAuth();
   const { activities, upcomingMeetings, leads, leadSourceCounts, error } =
     useDashboardData();
 
@@ -187,46 +180,63 @@ const Home = () => {
     for (const m of upcomingMeetings) {
       const d = m.startAtDate;
       if (!d) continue;
-      const key = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+      const key = new Date(
+        d.getFullYear(),
+        d.getMonth(),
+        d.getDate(),
+      ).getTime();
       map.set(key, [...(map.get(key) ?? []), m]);
     }
     return map;
   }, [upcomingMeetings]);
 
   return (
-    <div className="min-h-screen bg-[#050506] px-4 py-8 text-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-100 via-slate-50 to-white px-4 py-8 text-slate-900">
       <div className="mx-auto max-w-6xl">
-        <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-300/80">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600/90">
               Dashboard
             </p>
-            <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+            <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
               Welcome{user?.email ? `, ${user.email}` : ""}
             </h1>
-            <p className="mt-1 text-sm text-zinc-400">
-              Activities, meetings, and lead insights (live from Firestore).
+            <p className="mt-1 max-w-xl text-sm text-slate-600">
+              Activities, meetings, and lead insights from Firestore. Use the
+              nav to manage records.
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="flat" color="danger" onClick={() => signOut()}>
-              Sign out
-            </Button>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              to="/leads/create"
+              className="inline-flex rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700"
+            >
+              New lead
+            </Link>
+            <Link
+              to="/contacts/create"
+              className="inline-flex rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50"
+            >
+              New contact
+            </Link>
           </div>
         </header>
 
         {error && (
-          <div className="mb-6 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+          <div className="mb-6 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
             {String(error?.message ?? error)}
           </div>
         )}
 
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
-          {/* left: activities */}
           <div className="lg:col-span-4">
             <Card
               title="My Activities"
-              right={<span className="text-xs text-zinc-500">{activities.length}</span>}
+              right={
+                <span className="text-xs font-medium text-slate-500">
+                  {activities.length}
+                </span>
+              }
             >
               <div className="space-y-3">
                 {activities.map((a) => {
@@ -248,14 +258,14 @@ const Home = () => {
                   return (
                     <div
                       key={a.id}
-                      className="rounded-xl bg-white/3 px-4 py-3 ring-1 ring-white/6"
+                      className="rounded-xl border border-slate-100 bg-slate-50/50 px-4 py-3"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <div className="text-sm font-medium text-zinc-100">
+                          <div className="text-sm font-medium text-slate-900">
                             {a.title ?? "Untitled"}
                           </div>
-                          <div className="mt-1 text-xs text-zinc-400">
+                          <div className="mt-1 text-xs text-slate-500">
                             {a.account ?? "—"}
                             {due ? ` • ${formatShortDate(due)}` : ""}
                           </div>
@@ -269,18 +279,17 @@ const Home = () => {
                   );
                 })}
                 {activities.length === 0 && (
-                  <div className="text-sm text-zinc-500">No activities yet.</div>
+                  <div className="text-sm text-slate-500">No activities yet.</div>
                 )}
               </div>
             </Card>
           </div>
 
-          {/* right: calendar */}
           <div className="lg:col-span-8">
             <Card
               title="Calendar (next 7 days)"
               right={
-                <span className="text-xs text-zinc-500">
+                <span className="text-xs font-medium text-slate-500">
                   {new Intl.DateTimeFormat(undefined, {
                     month: "long",
                     year: "numeric",
@@ -290,7 +299,11 @@ const Home = () => {
             >
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-7">
                 {next7Days.map((d) => {
-                  const key = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+                  const key = new Date(
+                    d.getFullYear(),
+                    d.getMonth(),
+                    d.getDate(),
+                  ).getTime();
                   const items = meetingsByDay.get(key) ?? [];
                   const dayLabel = new Intl.DateTimeFormat(undefined, {
                     weekday: "short",
@@ -298,13 +311,13 @@ const Home = () => {
                   return (
                     <div
                       key={key}
-                      className="min-h-[120px] rounded-xl bg-white/3 p-3 ring-1 ring-white/6"
+                      className="min-h-[120px] rounded-xl border border-slate-100 bg-slate-50/40 p-3"
                     >
                       <div className="flex items-baseline justify-between">
-                        <div className="text-xs font-semibold text-zinc-200">
+                        <div className="text-xs font-semibold text-slate-800">
                           {dayLabel}
                         </div>
-                        <div className="text-[11px] text-zinc-500">
+                        <div className="text-[11px] text-slate-400">
                           {d.getDate()}
                         </div>
                       </div>
@@ -315,25 +328,27 @@ const Home = () => {
                           return (
                             <div
                               key={m.id}
-                              className="rounded-lg bg-black/25 px-2 py-1.5 ring-1 ring-white/5"
+                              className="rounded-lg border border-slate-100 bg-white px-2 py-1.5 shadow-sm"
                             >
                               <div className="flex items-center justify-between gap-2">
-                                <div className="truncate text-[11px] font-medium text-zinc-100">
+                                <div className="truncate text-[11px] font-medium text-slate-900">
                                   {m.title ?? "Meeting"}
                                 </div>
-                                <Badge tone={tone}>{start ? formatTime(start) : "—"}</Badge>
+                                <Badge tone={tone}>
+                                  {start ? formatTime(start) : "—"}
+                                </Badge>
                               </div>
-                              <div className="mt-0.5 truncate text-[11px] text-zinc-400">
+                              <div className="mt-0.5 truncate text-[11px] text-slate-500">
                                 {m.account ?? "—"}
                               </div>
                             </div>
                           );
                         })}
                         {items.length === 0 && (
-                          <div className="text-[11px] text-zinc-500">—</div>
+                          <div className="text-[11px] text-slate-400">—</div>
                         )}
                         {items.length > 3 && (
-                          <div className="text-[11px] text-zinc-500">
+                          <div className="text-[11px] text-slate-400">
                             +{items.length - 3} more
                           </div>
                         )}
@@ -345,44 +360,55 @@ const Home = () => {
             </Card>
           </div>
 
-          {/* bottom left: leads list */}
           <div className="lg:col-span-6">
             <Card
               title="My Leads"
-              right={<span className="text-xs text-zinc-500">{leads.length}</span>}
+              right={
+                <Link
+                  to="/leads"
+                  className="text-xs font-medium text-indigo-600 hover:text-indigo-800"
+                >
+                  View all
+                </Link>
+              }
             >
-              <div className="divide-y divide-white/6 overflow-hidden rounded-xl ring-1 ring-white/6">
+              <div className="divide-y divide-slate-100 overflow-hidden rounded-xl border border-slate-100">
                 {leads.slice(0, 8).map((l) => (
-                  <div key={l.id} className="flex items-center justify-between bg-white/3 px-4 py-3">
+                  <div
+                    key={l.id}
+                    className="flex items-center justify-between bg-white px-4 py-3"
+                  >
                     <div className="min-w-0">
-                      <div className="truncate text-sm font-medium text-zinc-100">
+                      <div className="truncate text-sm font-medium text-slate-900">
                         {l.name ?? "Untitled"}
                       </div>
-                      <div className="mt-0.5 truncate text-xs text-zinc-400">
+                      <div className="mt-0.5 truncate text-xs text-slate-500">
                         {l.company ?? "—"} • {l.source ?? "Unknown"}
                       </div>
                     </div>
                     <div className="ml-3 flex items-center gap-2">
                       <Badge tone="zinc">{l.stage ?? "—"}</Badge>
-                      <span className="text-xs font-semibold text-zinc-200">
-                        ${Number(l.value ?? 0).toLocaleString()}
+                      <span className="text-xs font-semibold text-slate-800">
+                        ₹{Number(l.value ?? 0).toLocaleString("en-IN")}
                       </span>
                     </div>
                   </div>
                 ))}
                 {leads.length === 0 && (
-                  <div className="bg-white/3 px-4 py-6 text-sm text-zinc-500">
-                    No leads yet.
+                  <div className="px-4 py-8 text-center text-sm text-slate-500">
+                    No leads yet.{" "}
+                    <Link
+                      to="/leads/create"
+                      className="font-medium text-indigo-600 hover:underline"
+                    >
+                      Create one
+                    </Link>
                   </div>
                 )}
-              </div>
-              <div className="mt-4 text-xs text-zinc-500">
-                Tip: run <span className="font-mono">npm run seed</span> to generate dummy data.
               </div>
             </Card>
           </div>
 
-          {/* bottom right: lead source pie */}
           <div className="lg:col-span-6">
             <Card title="Opportunities by Lead Source">
               <DonutChart data={leadSourceCounts.slice(0, 7)} />

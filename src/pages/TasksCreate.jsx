@@ -71,9 +71,9 @@ export default function TasksCreate() {
   return (
     <CrmShell
       title="Tasks • create"
-      crumbs={[{ label: "Tasks", to: "/" }, { label: "create" }]}
+      crumbs={[{ label: "Tasks", to: "/tasks" }, { label: "create" }]}
       onSave={isSaving ? undefined : onSave}
-      onCancelTo="/"
+      onCancelTo="/tasks"
     >
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
         <div className="lg:col-span-8">
